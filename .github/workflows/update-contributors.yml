@@ -25,49 +25,47 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
-    - name: 🔍 Get contributor stats
-      id: contributors
+    - name: 🏆 Update contributors list
       run: |
-        echo "📊 Fetching contributor statistics..."
+        set -x
+        {
+          echo "<div align=\"center\">";
+          echo "  <a href=\"https://github.com/admirerr/DSA-Collection/graphs/contributors\">";
+        } > contributors.html
 
-        # Get contributors with commit counts, excluding GitHub Actions users
-        contributors=$(curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
-          jq -r '.[] | select(.login != "github-actions[bot]" and .login != "actions-user" and .type != "Bot") | "\(.login) \(.contributions)"')
+        curl -s "https://api.github.com/repos/${{ github.repository }}/contributors?per_page=100" | \
+        jq -r '.[] | select(.type != "Bot") | @base64 "\(.login), \(.avatar_url), \(.contributions)"' | \
+        while read -r c; do
+          if [ -z "$c" ]; then
+            continue
+          fi
+          DECODED=$(echo "$c" | base64 -d)
+          IFS=',' read -r login avatar_url contributions <<< "$DECODED"
+          echo "    <img src=\"${avatar_url}&s=50\" width=\"50\" height=\"50\" alt=\"$\{login}\"/>" >> contributors.html
+        done
 
-        echo "Contributors found (excluding bots):"
-        echo "$contributors"
+        {
+          echo "  </a>";
+          echo "</div>";
+        } >> contributors.html
 
-        # Count total contributors (excluding bots)
-        total_contributors=$(echo "$contributors" | grep -v '^$' | wc -l)
-        echo "total_contributors=$total_contributors" >> $GITHUB_OUTPUT
+        python << EOF
+        import re
 
-        # Get top contributors
-        top_contributors=$(echo "$contributors" | head -10)
-        echo "top_contributors<<EOF" >> $GITHUB_OUTPUT
-        echo "$top_contributors" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-
-    - name: 📊 Update repository stats
-      run: |
-        echo "📊 Updating repository statistics..."
-
-        # Update stats in README.md
-        if [ -f "README.md" ]; then
-          # Update contributor count in README
-          sed -i "s/🎯 \*\*[0-9]*+ Contributors\*\*/🎯 **${{ steps.contributors.outputs.total_contributors }}+ Contributors**/g" README.md
-
-          echo "✅ Updated README.md with new contributor count"
-        fi
-
-        # Update stats in HALL_OF_FAME.md
-        if [ -f "HALL_OF_FAME.md" ]; then
-          # Update contributor count in Hall of Fame
-          sed -i "s/\*\*Total 2025 Contributors: [0-9]*+ Amazing Developers!\*\*/\*\*Total 2025 Contributors: ${{ steps.contributors.outputs.total_contributors }}+ Amazing Developers!\*\*/g" HALL_OF_FAME.md
-          sed -i "s/We extend our heartfelt gratitude to all \*\*[0-9]*+ contributors\*\*/We extend our heartfelt gratitude to all **${{ steps.contributors.outputs.total_contributors }}+ contributors**/g" HALL_OF_FAME.md
-          sed -i "s/| 👥 \*\*Total Contributors\*\* | [0-9]*+ Amazing Developers |/| 👥 **Total Contributors** | ${{ steps.contributors.outputs.total_contributors }}+ Amazing Developers |/g" HALL_OF_FAME.md
-
-          echo "✅ Updated HALL_OF_FAME.md with new contributor count"
-        fi
+        with open('README.md', 'r+') as f:
+            text = f.read()
+            with open('contributors.html', 'r') as c:
+                contributors_html = c.read()
+            
+            # Replace everything between the tags
+            new_text = re.sub(r'(<!-- CONTRIBUTORS_LIST -->)(.|\n)*(<!-- CONTRIBUTORS_LIST_END -->)',
+                              f'\1\n{contributors_html}\n\3',
+                              text)
+            
+            f.seek(0)
+            f.write(new_text)
+            f.truncate()
+        EOF
 
     - name: 📈 Update language statistics
       run: |
@@ -93,7 +91,7 @@ jobs:
 
         # Update README stats
         if [ -f "README.md" ]; then
-          sed -i "s/💻 \*\*[0-9]*+ Languages\*\*/💻 **${supported_languages}+ Languages**/g" README.md
+          sed -i "s/💻 \*\*[0-9]*+ Languages\*\* /💻 **${supported_languages}+ Languages**/g" README.md
         fi
 
     - name: 📅 Update last modified date
@@ -102,7 +100,7 @@ jobs:
         current_date=$(date +"%B %Y")
 
         if [ -f "HALL_OF_FAME.md" ]; then
-          sed -i "s/\*Last updated: .* [0-9]*\*/\*Last updated: $current_date\*/g" HALL_OF_FAME.md
+          sed -i "s/\*Last updated: .* [0-9]*\* /\*Last updated: $current_date\*/g" HALL_OF_FAME.md
           echo "✅ Updated last modified date in HALL_OF_FAME.md"
         fi
 
@@ -127,13 +125,7 @@ jobs:
 
         git add README.md HALL_OF_FAME.md
 
-        git commit -m "🏆 Auto-update contributor statistics
-
-        - Updated contributor count: ${{ steps.contributors.outputs.total_contributors }}+ amazing developers
-        - Refreshed repository statistics
-        - Updated last modified date
-
-        🤖 Generated by GitHub Actions"
+        git commit -m "🏆 Auto-update contributor statistics"
 
         git push
 

@@ -135,16 +135,8 @@ If you find this project useful, consider **starring the repo** to help others d
 
 ---
 
-## 📌 Useful Links
-
-[🏆 Hall of Fame](./HALL_OF_FAME.md)
-
 ## 🌟 Our Amazing Contributors
 
-<div align="center">
-<a href="https://github.com/admirerr/DSA-Collection/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=admirerr/DSA-Collection" />
-</a>
+<!-- CONTRIBUTORS_LIST -->
+<!-- CONTRIBUTORS_LIST_END -->
 
-Made with [contrib.rocks](https://contrib.rocks)
-</div>
