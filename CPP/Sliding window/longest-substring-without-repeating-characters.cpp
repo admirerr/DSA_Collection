@@ -1,8 +1,6 @@
+// Problem: Longest Substring Without Repeating Characters
 #include <bits/stdc++.h>
 using namespace std;
-/**
-Longest Substring Without Repeating Characters
- */
 
 int solve(string str) {
 
