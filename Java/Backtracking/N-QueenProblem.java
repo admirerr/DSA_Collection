@@ -1,5 +1,7 @@
 import java.util.*;
 
+// N-Queen Problem
+
 class Queen {
     private boolean canPlace(char[][] board, int row, int col, int n) {
         // upper-left diagonal
