@@ -4,7 +4,44 @@
 //
 //Wikipedia: https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm
 //GeeksforGeeks: https://www.geeksforgeeks.org/dsa/bellman-ford-algorithm-dp-23
-
+//
+//
+//-----PROBLEM EXPLANATION-----
+//The Bellman-Ford algorithm is used to find the shortest path from a single source
+//to all other vertices in a weighted graph. 
+//Unlike Dijkstra's algorithm, it can handle graphs with negative edge weights
+//and can also detect negative weight cycles.
+//
+//The algorithm works by relaxing all edges repeatedly (V-1 times, where V is
+//the number of vertices). After that, if we can still relax an edge, 
+//it means the graph contains a negative weight cycle.
+//
+//
+//-----SAMPLE INPUT (Graph Edges)-----
+//Vertices = 5, Edges = 8
+//Edges: (src, dest, weight)
+//0 -> 1 (-1)
+//0 -> 2 (4)
+//1 -> 2 (3)
+//1 -> 3 (2)
+//1 -> 4 (2)
+//3 -> 2 (5)
+//3 -> 1 (1)
+//4 -> 3 (-3)
+//
+//Source = 0
+//
+//
+//-----EXPECTED OUTPUT-----
+//Vertex  Distance from Source 0
+//0       0
+//1       -1
+//2       2
+//3       -2
+//4       1
+//
+//If there had been a negative cycle, it would print:
+//"Graph contains a negative weight cycle!"
 
 
 import java.util.*;
