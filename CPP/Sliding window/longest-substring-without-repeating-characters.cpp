@@ -1,11 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 /**
- * Problem: Longest Substring Without Repeating Characters
- *
- * This solution uses the "Sliding Window" technique along with an
- * unordered map (hash map) to efficiently find the length of the
- * longest substring without repeating characters.
+Longest Substring Without Repeating Characters
  */
 
 int solve(string str) {
