@@ -140,10 +140,3 @@ And we're excited to accept solutions in:
 
 If you find this project useful, consider **starring the repo** to help others discover it.
 
----
-
-## 🌟 Our Amazing Contributors
-
-<!-- CONTRIBUTORS_LIST -->
-<!-- CONTRIBUTORS_LIST_END -->
-
